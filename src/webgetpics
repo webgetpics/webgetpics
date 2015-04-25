@@ -18,11 +18,13 @@ SCRAPE=$!
 python2 -B /usr/lib/webgetpics/produce.py &>>log/produce.log &
 PRODUCE=$!
 
-trap "
-  echo 'Quitting.' ;
-  touch {produce,scrape}/cmd/quit ;
+function onquit() {
+  trap "" SIGINT SIGTERM
+  echo "Quitting." ;
+  touch {produce,scrape}/cmd/quit
   wait $SCRAPE $PRODUCE
-" SIGINT SIGTERM
+}
 
+trap onquit SIGINT SIGTERM
 echo "Serving."
 wait $SCRAPE $PRODUCE
