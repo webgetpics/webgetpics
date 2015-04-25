@@ -5,6 +5,7 @@ from share import readquery, writefile, CONFIG
 from time import time, sleep
 from os.path import isfile
 from os import rename
+from md5 import md5
 import logging
 
 RETRIES = 10 # times
@@ -17,6 +18,7 @@ URLS_PATH = 'scrape/out/urls'
 def find_img_urls(query):
   start = 0
   while True:
+    print start
     cmd = ['curl',
       'https://www.google.com/search?q=%s&tbm=isch&start=%i' \
         % (quote_plus(query), start),
@@ -52,12 +54,15 @@ if __name__ == '__main__':
     query = readquery(QUERY_PATH)
     logging.info('Scraping images for query "%s".' % query)
     for url in find_img_urls(query):
-      fname = '%s/%s/%s.url' % (URLS_PATH, query, md5(url).hexdigest())
-      if isfile(fname):
-        logging.info('Image already exists %s: %s' % (fname, url))
+      fname = '%s/%s/%s' % (URLS_PATH, query, md5(url).hexdigest())
+      fnurl = '%s.url' % fname
+      fnpart = '%s.part' % fname
+      if isfile(fnurl):
+        logging.info('Image already exists %s: %s' % (fnurl, url))
       else:
-        logging.info('Scraped new image %s: %s' % (fname, url))
-        writefile(fname, url)
+        logging.info('Scraped new image %s: %s' % (fnurl, url))
+        writefile(fnpart, url)
+        rename(fnpart, fnurl)
     logging.info('Sleeping for %i seconds' % CONFIG['SCRAPE_SLEEP'])
     endtime = time() + CONFIG['SCRAPE_SLEEP']
     while time() < endtime:

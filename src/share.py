@@ -1,4 +1,5 @@
-from os import makedirs
+import os
+import errno
 from os.path import isfile, dirname
 import json
 
@@ -28,7 +29,7 @@ def writefile(path, contents):
     f.write(contents)
 
 def readquery(path):
-  return readfile(QUERY_FILE).strip().replace('\n','').replace('\r','') \
+  return readfile(path).strip().replace('\n','').replace('\r','') \
       or DEFAULT_QUERY
 
 CONFIG = eval(readfile(CONFIG_PATH))
