@@ -14,7 +14,6 @@ echo $$ > lock.pid
 mkdir -p log {scrape,produce}/{in,cmd}
 
 rm -rf {scrape,produce}"/in/query.txt" "produce/in/url"
-
 ln -s ../../query.txt "scrape/in/query.txt"
 ln -s ../../query.txt "produce/in/query.txt"
 ln -s ../../scrape/out/url "produce/in/url"
