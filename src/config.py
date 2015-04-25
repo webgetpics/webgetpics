@@ -18,10 +18,10 @@
  'PRODUCE_SLEEP_MAX': 600,
 
  # There are very large and very small images on the internet.
- # We'll skip images whose width or height is less than IMG_MIN_DIM pixels or
- # greater than IMG_MAX_DIM pixels.
- 'IMG_MIN_DIM': 5,
- 'IMG_MAX_DIM': 4100,
+ # We'll skip images whose width or height is less than IMG_DIM_MIN pixels or
+ # greater than IMG_DIM_MAX pixels.
+ 'IMG_DIM_MIN': 5,
+ 'IMG_DIM_MAX': 4100,
 
  # Convert all images to this format.
  'IMG_EXT': 'png',

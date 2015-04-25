@@ -48,9 +48,9 @@ def check_dims(urlmd5):
   except CalledProcessError:
     raise Skip('Error inspecting dims of image %s.' % urlmd5)
   logging.info('Image %s dimensions: %s' % (urlmd5, dims))
-  if max([int(x) for x in dims.split()]) > CONFIG['IMG_MAX_DIM']:
+  if max([int(x) for x in dims.split()]) > CONFIG['IMG_DIM_MAX']:
     raise Skip('Image %s is too large.' % urlmd5)
-  if min([int(x) for x in dims.split()]) < CONFIG['IMG_MIN_DIM']:
+  if min([int(x) for x in dims.split()]) < CONFIG['IMG_DIM_MIN']:
     raise Skip('Image %s is too small.' % urlmd5)
 
 def resize(urlmd5):
