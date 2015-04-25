@@ -16,13 +16,11 @@ QUERY_PATH = 'scrape/in/query.txt'
 URLS_PATH = 'scrape/out/urls'
 
 def find_img_urls(query):
-  start = 0
   ijn = 0
   while True:
-    print start
     cmd = ['curl',
-      'https://www.google.com/search?q=%s&tbm=isch&ijn=%i&start=%i' \
-        % (quote_plus(query), ijn, start),
+      'https://www.google.com/search?q=%s&tbm=isch&ijn=%i' \
+        % (quote_plus(query), ijn),
       '--silent',
       '--compressed',
       '--retry', str(RETRIES),
@@ -46,7 +44,6 @@ def find_img_urls(query):
       break
     ijn += 1
     for url in urls:
-      start += 1
       yield unquote_plus(unquote_plus(url))
 
 if __name__ == '__main__':
