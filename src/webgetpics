@@ -11,6 +11,7 @@ ln -s ../../query.txt "produce/in/query.txt"
 ln -s ../../scrape/out/url "produce/in/url"
 
 if [ ! -e config.py ] ; then cp /usr/lib/webgetpics/config.py . ; fi
+if [ ! -e query.txt ] ; then cp /usr/lib/webgetpics/query.txt . ; fi
 
 python2 -B /usr/lib/webgetpics/scrape.py &>log/scrape.log &
 python2 -B /usr/lib/webgetpics/produce.py &>log/produce.log &

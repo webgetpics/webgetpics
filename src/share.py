@@ -5,7 +5,7 @@ from os.path import isfile, dirname, splitext, split
 from glob import glob
 from random import seed
 
-DEFAULT_QUERY = 'dr zoidberg' # oh yes.
+DEFAULT_QUERY_FILE = '/usr/lib/webgetpics/query.txt'
 CONFIG_FILE = 'config.py'
 
 # http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python/600612#600612
@@ -32,7 +32,7 @@ def writefile(path, contents):
 
 def readquery(path):
   return readfile(path).strip().replace('\n','').replace('\r','') \
-      or DEFAULT_QUERY
+      or readfile(DEFAULT_QUERY_FILE)
 
 def globfs(g):
   return [splitext(split(x)[1])[0] for x in glob(g)]
