@@ -3,7 +3,6 @@ from os.path import join, isfile
 from os import remove, rename
 from glob import glob
 from random import shuffle
-from shutil import move
 from subprocess import call, check_output, CalledProcessError
 from time import time, sleep
 import logging
@@ -86,8 +85,8 @@ def save_img(urlmd5):
     logging.info('Image %s is already there.' % imghash)
   else:
     logging.info('Image %s is ready.' % imghash)
-    move(join(TMP_PATH, imghash+'.'+CONFIG['IMG_EXT']),
-         join(IMG_PATH, imghash+'.'+CONFIG['IMG_EXT']))
+    rename(join(TMP_PATH, urlmd5+'.'+CONFIG['IMG_EXT']),
+           join(IMG_PATH, imghash+'.'+CONFIG['IMG_EXT']))
 
 def cleartmp():
   for fname in glob(join(TMP_PATH, '*')):
@@ -95,6 +94,7 @@ def cleartmp():
 
 if __name__ == '__main__':
   mkdir_p(TMP_PATH)
+  mkdir_p(IMG_PATH)
   query = None
   while True:
     if readquery(QUERY_FILE) != query:
