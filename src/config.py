@@ -10,7 +10,7 @@
 
  # It's quite time consuming to check if there are newly scraped image URLs,
  # which have not been processed yet. So it's better to wait between checks.
- # If there's no work available, time delay will double until it hits
+ # If there's no work available, the delay will double until it hits
  # maximum limit - PRODUCE_SLEEP_MAX seconds.
  # The delay resets to PRODUCE_SLEEP_MIN seconds each time there's some work
  # to be done, or each time the query changes.
