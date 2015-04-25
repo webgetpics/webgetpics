@@ -5,7 +5,7 @@ from os.path import isfile, dirname, splitext, split
 from glob import glob
 from random import seed
 
-DEFAULT_QUERY = 'dr zoidberg' # yep.
+DEFAULT_QUERY = 'dr zoidberg' # oh yes.
 CONFIG_FILE = 'config.py'
 
 # http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python/600612#600612

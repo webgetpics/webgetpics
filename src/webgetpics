@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e
+
+mkdir -p log "scrape/in" "produce/in"
+
+rm -rf {scrape,produce}"/in/query.txt" scrape/out/url
+
+ln -s ../../query.txt "scrape/in/query.txt"
+ln -s ../../query.txt "produce/in/query.txt"
+ln -s ../../scrape/out/url "produce/in/url"
+
+if [ ! -e config.py ] ; then cp /usr/lib/webgetpics/config.py . ; fi
+
+python2 -B /usr/lib/webgetpics/scrape.py &>log/scrape.log &
+python2 -B /usr/lib/webgetpics/produce.py &>log/produce.log &
+
+echo "Serving."
+while true ; do sleep 1000 ; done
