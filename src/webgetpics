@@ -2,6 +2,15 @@
 
 set -e
 
+if [ -e lock.pid ] ; then
+  if kill -0 $(cat lock.pid) &>/dev/null ; then
+    echo "webgetpics is already running in the current directory."
+    exit 1
+  fi
+fi
+
+echo $$ > lock.pid
+
 mkdir -p log {scrape,produce}/{in,cmd}
 
 rm -rf {scrape,produce}"/in/query.txt" "produce/in/url"
@@ -23,6 +32,7 @@ function onquit() {
   echo "Quitting." ;
   touch {produce,scrape}/cmd/quit
   wait $SCRAPE $PRODUCE
+  rm lock.pid
 }
 
 trap onquit SIGINT SIGTERM
