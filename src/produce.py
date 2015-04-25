@@ -33,7 +33,7 @@ def download(query, urlmd5):
   logging.info('Downloading image %s: %s' % (urlmd5, url))
   res = call(['wget', '--no-check-certificate',
               '--tries', str(RETRIES), '--timeout', str(TIMEOUT),
-              '--limit-rate', str(CONFIG['BW_LIMIT']),
+              '--limit-rate', str(CONFIG['LIMIT_RATE']),
               '-O', join(TMP_PATH, urlmd5+'.downloaded'),
               url])
   if res != 0:

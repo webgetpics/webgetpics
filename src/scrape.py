@@ -26,7 +26,7 @@ def find_img_urls(query):
       '--retry', str(RETRIES),
       '--retry-delay', str(RETRY_DELAY),
       '--max-time', str(TIMEOUT),
-      '--limit-rate', str(CONFIG['BW_LIMIT']),
+      '--limit-rate', str(CONFIG['LIMIT_RATE']),
       '-H', 'Host: www.google.com',
       '-H', 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:36.0) '
             'Gecko/20100101 Firefox/36.0',
