@@ -6,6 +6,7 @@ from glob import glob
 from random import seed
 
 DEFAULT_QUERY_FILE = '/usr/lib/webgetpics/query.txt'
+DEFAULT_CONFIG_FILE = '/usr/lib/webgetpics/config.py'
 CONFIG_FILE = 'config.py'
 
 # http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python/600612#600612
@@ -37,7 +38,8 @@ def readquery(path):
 def globfs(g):
   return [splitext(split(x)[1])[0] for x in glob(g)]
 
-CONFIG = eval(readfile(CONFIG_FILE))
+CONFIG = dict(eval(readfile(DEFAULT_CONFIG_FILE)).items() +
+              eval(readfile(CONFIG_FILE)).items())
 
 logging.basicConfig(format='%(levelname)-8s %(asctime)-15s %(message)s')
 logging.getLogger().setLevel(logging.INFO)
