@@ -1,6 +1,7 @@
 from re import findall
 from urllib import quote_plus, unquote_plus
 from subprocess import check_output, CalledProcessError
+from share import mkdir_p
 import logging
 
 RETRIES = 10 # times
@@ -8,7 +9,7 @@ RETRY_DELAY = 10 # seconds
 TIMEOUT = 30 # seconds
 BWLIMIT = 100000 # bytes/second
 
-def fetch_urls(query):
+def find_img_urls(query):
   start = 0
   while True:
     cmd = ['curl',
@@ -38,3 +39,6 @@ def fetch_urls(query):
     for url in urls:
       start += 1
       yield unquote_plus(unquote_plus(url))
+
+logging.basicConfig(format='%(levelname)-8s %(asctime)-15s %(message)s')
+logging.getLogger().setLevel(logging.INFO)

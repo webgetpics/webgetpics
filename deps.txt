@@ -1,0 +1,3 @@
+curl
+python2
+wget
