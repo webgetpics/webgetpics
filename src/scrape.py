@@ -11,7 +11,7 @@ import logging
 RETRIES = 10 # times
 RETRY_DELAY = 10 # seconds
 TIMEOUT = 30 # seconds
-POLL_SLEEP = 10 # seconds
+POLL_SLEEP = 1 # seconds
 QUERY_FILE = 'scrape/in/query.txt'
 URL_PATH = 'scrape/out/url'
 
@@ -51,6 +51,8 @@ if __name__ == '__main__':
     query = readquery(QUERY_FILE)
     logging.info('Scraping images for query "%s".' % query)
     for url in find_img_urls(query):
+      if query != readquery(QUERY_FILE):
+        break
       fname = join(URL_PATH, query, md5(url).hexdigest())
       fnurl = '%s.url' % fname
       fnpart = '%s.part' % fname

@@ -8,7 +8,7 @@ from time import time, sleep
 
 RETRIES = 10 # times
 TIMEOUT = 30 # seconds
-POLL_SLEEP = 10 # seconds
+POLL_SLEEP = 1 # seconds
 QUERY_FILE = 'produce/in/query.txt'
 URL_PATH = 'produce/in/url'
 IMG_PATH = 'produce/out/img'

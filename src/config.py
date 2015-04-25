@@ -2,7 +2,8 @@
  # Bandwidth usage limit in bytes/second.
  'BW_LIMIT': 100000,
 
- # How many seconds to sleep before scraping the same query again.
+ # When scraping is done, sleep for this number of seconds before
+ # repeat scraping. If the query has changed, do scraping right away though.
  'SCRAPE_SLEEP': 6*3600,
 
  # For how long the producer should wait after it finished work before
