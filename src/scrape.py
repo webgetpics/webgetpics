@@ -3,7 +3,7 @@ from urllib import quote_plus, unquote_plus
 from subprocess import check_output, CalledProcessError
 from share import readquery, writefile, CONFIG
 from time import time, sleep
-from os.path import isfile
+from os.path import isfile, join
 from os import rename
 from md5 import md5
 import logging
@@ -12,8 +12,8 @@ RETRIES = 10 # times
 RETRY_DELAY = 10 # seconds
 TIMEOUT = 30 # seconds
 POLL_SLEEP = 10 # seconds
-QUERY_PATH = 'scrape/in/query.txt'
-URLS_PATH = 'scrape/out/urls'
+QUERY_FILE = 'scrape/in/query.txt'
+URL_PATH = 'scrape/out/url'
 
 def find_img_urls(query):
   ijn = 0
@@ -48,10 +48,10 @@ def find_img_urls(query):
 
 if __name__ == '__main__':
   while True:
-    query = readquery(QUERY_PATH)
+    query = readquery(QUERY_FILE)
     logging.info('Scraping images for query "%s".' % query)
     for url in find_img_urls(query):
-      fname = '%s/%s/%s' % (URLS_PATH, query, md5(url).hexdigest())
+      fname = join(URL_PATH, query, md5(url).hexdigest())
       fnurl = '%s.url' % fname
       fnpart = '%s.part' % fname
       if isfile(fnurl):
@@ -63,6 +63,6 @@ if __name__ == '__main__':
     logging.info('Sleeping for %i seconds' % CONFIG['SCRAPE_SLEEP'])
     endtime = time() + CONFIG['SCRAPE_SLEEP']
     while time() < endtime:
-      if query != readquery(QUERY_PATH):
+      if query != readquery(QUERY_FILE):
         break
       sleep(POLL_SLEEP)

@@ -1,10 +1,12 @@
 import os
 import errno
 import logging
-from os.path import isfile, dirname
+from os.path import isfile, dirname, splitext, split
+from glob import glob
+from random import seed
 
 DEFAULT_QUERY = 'dr zoidberg' # yep.
-CONFIG_PATH = 'config.py'
+CONFIG_FILE = 'config.py'
 
 # http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python/600612#600612
 def mkdir_p(path):
@@ -32,7 +34,11 @@ def readquery(path):
   return readfile(path).strip().replace('\n','').replace('\r','') \
       or DEFAULT_QUERY
 
-CONFIG = eval(readfile(CONFIG_PATH))
+def globfs(g):
+  return [splitext(split(x)[1])[0] for x in glob(g)]
+
+CONFIG = eval(readfile(CONFIG_FILE))
 
 logging.basicConfig(format='%(levelname)-8s %(asctime)-15s %(message)s')
 logging.getLogger().setLevel(logging.INFO)
+seed()
