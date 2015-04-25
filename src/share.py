@@ -38,6 +38,14 @@ def readquery(path):
 def globfs(g):
   return [splitext(split(x)[1])[0] for x in glob(g)]
 
+def cmd(path):
+  if isfile(path):
+    os.remove(path)
+    return True
+
+class Quit(Exception):
+  pass
+
 CONFIG = dict(eval(readfile(DEFAULT_CONFIG_FILE)).items() +
               eval(readfile(CONFIG_FILE)).items())
 

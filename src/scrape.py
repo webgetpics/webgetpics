@@ -1,7 +1,7 @@
 from re import findall
 from urllib import quote_plus, unquote_plus
 from subprocess import check_output, CalledProcessError
-from share import readquery, writefile, CONFIG
+from share import readquery, writefile, CONFIG, Quit, cmd
 from time import time, sleep
 from os.path import isfile, join
 from os import rename
@@ -14,6 +14,7 @@ TIMEOUT = 30 # seconds
 POLL_SLEEP = 1 # seconds
 QUERY_FILE = 'scrape/in/query.txt'
 URL_PATH = 'scrape/out/url'
+CMD_QUIT = 'scrape/cmd/quit'
 
 def find_img_urls(query):
   ijn = 0
@@ -47,24 +48,31 @@ def find_img_urls(query):
       yield unquote_plus(unquote_plus(url))
 
 if __name__ == '__main__':
-  while True:
-    query = readquery(QUERY_FILE)
-    logging.info('Scraping images for query "%s".' % query)
-    for url in find_img_urls(query):
-      if query != readquery(QUERY_FILE):
-        break
-      fname = join(URL_PATH, query, md5(url).hexdigest())
-      fnurl = '%s.url' % fname
-      fnpart = '%s.part' % fname
-      if isfile(fnurl):
-        logging.info('Image already exists "%s": %s' % (fnurl, url))
-      else:
-        logging.info('Scraped new image "%s": %s' % (fnurl, url))
-        writefile(fnpart, url)
-        rename(fnpart, fnurl)
-    logging.info('Sleeping for %i seconds' % CONFIG['SCRAPE_SLEEP'])
-    endtime = time() + CONFIG['SCRAPE_SLEEP']
-    while time() < endtime:
-      if query != readquery(QUERY_FILE):
-        break
-      sleep(POLL_SLEEP)
+  try:
+    while True:
+      query = readquery(QUERY_FILE)
+      logging.info('Scraping images for query "%s".' % query)
+      for url in find_img_urls(query):
+        if query != readquery(QUERY_FILE):
+          break
+        if cmd(CMD_QUIT):
+          raise Quit()
+        fname = join(URL_PATH, query, md5(url).hexdigest())
+        fnurl = '%s.url' % fname
+        fnpart = '%s.part' % fname
+        if isfile(fnurl):
+          logging.info('Image already exists "%s": %s' % (fnurl, url))
+        else:
+          logging.info('Scraped new image "%s": %s' % (fnurl, url))
+          writefile(fnpart, url)
+          rename(fnpart, fnurl)
+      logging.info('Sleeping for %i seconds' % CONFIG['SCRAPE_SLEEP'])
+      endtime = time() + CONFIG['SCRAPE_SLEEP']
+      while time() < endtime:
+        if query != readquery(QUERY_FILE):
+          break
+        if cmd(CMD_QUIT):
+          raise Quit()
+        sleep(POLL_SLEEP)
+  except Quit:
+    logging.info('Quit requested.')

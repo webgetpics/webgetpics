@@ -2,9 +2,7 @@
 
 set -e
 
-trap 'kill $(jobs -p)' EXIT
-
-mkdir -p log "scrape/in" "produce/in"
+mkdir -p log {scrape,produce}/{in,cmd}
 
 rm -rf {scrape,produce}"/in/query.txt" "produce/in/url"
 
@@ -16,7 +14,15 @@ if [ ! -e config.py ] ; then cp /usr/lib/webgetpics/config.py . ; fi
 if [ ! -e query.txt ] ; then cp /usr/lib/webgetpics/query.txt . ; fi
 
 python2 -B /usr/lib/webgetpics/scrape.py &>log/scrape.log &
+SCRAPE=$!
 python2 -B /usr/lib/webgetpics/produce.py &>log/produce.log &
+PRODUCE=$!
+
+trap "
+  echo 'Quitting.' ;
+  touch {produce,scrape}/cmd/quit ;
+  wait $SCRAPE $PRODUCE
+" SIGINT SIGTERM
 
 echo "Serving."
-while true ; do sleep 1000 ; done
+wait $SCRAPE $PRODUCE
