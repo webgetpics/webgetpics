@@ -1,7 +1,7 @@
 import os
 import errno
+import logging
 from os.path import isfile, dirname
-import json
 
 DEFAULT_QUERY = 'dr zoidberg' # yep.
 CONFIG_PATH = 'config.py'
@@ -33,3 +33,6 @@ def readquery(path):
       or DEFAULT_QUERY
 
 CONFIG = eval(readfile(CONFIG_PATH))
+
+logging.basicConfig(format='%(levelname)-8s %(asctime)-15s %(message)s')
+logging.getLogger().setLevel(logging.INFO)

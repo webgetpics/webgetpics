@@ -50,8 +50,6 @@ def find_img_urls(query):
       yield unquote_plus(unquote_plus(url))
 
 if __name__ == '__main__':
-  logging.basicConfig(format='%(levelname)-8s %(asctime)-15s %(message)s')
-  logging.getLogger().setLevel(logging.INFO)
   while True:
     query = readquery(QUERY_PATH)
     logging.info('Scraping images for query "%s".' % query)
@@ -60,9 +58,9 @@ if __name__ == '__main__':
       fnurl = '%s.url' % fname
       fnpart = '%s.part' % fname
       if isfile(fnurl):
-        logging.info('Image already exists %s: %s' % (fnurl, url))
+        logging.info('Image already exists "%s": %s' % (fnurl, url))
       else:
-        logging.info('Scraped new image %s: %s' % (fnurl, url))
+        logging.info('Scraped new image "%s": %s' % (fnurl, url))
         writefile(fnpart, url)
         rename(fnpart, fnurl)
     logging.info('Sleeping for %i seconds' % CONFIG['SCRAPE_SLEEP'])
