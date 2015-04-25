@@ -1,5 +1,5 @@
 from share import readquery, readfile, writefile, globfs, mkdir_p, CONFIG, \
-                  Quit, cmd
+                  runloop, allowquit
 from os.path import join, isfile
 from os import remove, rename
 from glob import glob
@@ -94,43 +94,41 @@ def cleartmp():
   for fname in glob(join(TMP_PATH, '*')):
     remove(fname)
 
-if __name__ == '__main__':
+def main():
   mkdir_p(TMP_PATH)
   mkdir_p(IMG_PATH)
   query = None
-  try:
-    while True:
+  while True:
+    if readquery(QUERY_FILE) != query:
+      query = readquery(QUERY_FILE)
+      delay = CONFIG['PRODUCE_SLEEP_MIN']
+      logging.info('Producing images for query "%s".' % query)
+    to_prod = to_produce(query)
+    if not to_prod:
+      logging.info('Nothing to produce.')
+    else:
+      delay = CONFIG['PRODUCE_SLEEP_MIN']
+    for urlmd5 in to_prod:
       if readquery(QUERY_FILE) != query:
-        query = readquery(QUERY_FILE)
-        delay = CONFIG['PRODUCE_SLEEP_MIN']
-        logging.info('Producing images for query "%s".' % query)
-      to_prod = to_produce(query)
-      if not to_prod:
-        logging.info('Nothing to produce.')
-      else:
-        delay = CONFIG['PRODUCE_SLEEP_MIN']
-      for urlmd5 in to_prod:
-        if readquery(QUERY_FILE) != query:
-          break
-        if cmd(CMD_QUIT):
-          raise Quit()
-        cleartmp()
-        try:
-          download(query, urlmd5)
-          check_dims(urlmd5)
-          resize(urlmd5)
-          save_hash(urlmd5)
-          save_img(urlmd5)
-        except Skip as e:
-          logging.warn('%s Skipping.' % str(e))
-          writefile(join(SKIP_PATH, urlmd5, '.skip'), '')
-      endtime = time() + delay
-      while time() < endtime:
-        if query != readquery(QUERY_FILE):
-          break
-        if cmd(CMD_QUIT):
-          raise Quit()
-        sleep(POLL_SLEEP)
-      delay = min(CONFIG['PRODUCE_SLEEP_MAX'], delay*2)
-  except Quit:
-    logging.info('Quit requested.')
+        break
+      allowquit(CMD_QUIT)
+      cleartmp()
+      try:
+        download(query, urlmd5)
+        check_dims(urlmd5)
+        resize(urlmd5)
+        save_hash(urlmd5)
+        save_img(urlmd5)
+      except Skip as e:
+        logging.warn('%s Skipping.' % str(e))
+        writefile(join(SKIP_PATH, urlmd5, '.skip'), '')
+    endtime = time() + delay
+    while time() < endtime:
+      if query != readquery(QUERY_FILE):
+        break
+      allowquit(CMD_QUIT)
+      sleep(POLL_SLEEP)
+    delay = min(CONFIG['PRODUCE_SLEEP_MAX'], delay*2)
+
+if __name__ == '__main__':
+  runloop(main)

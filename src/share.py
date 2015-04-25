@@ -43,6 +43,16 @@ def cmd(path):
     os.remove(path)
     return True
 
+def allowquit(path):
+  if cmd(path):
+    raise Quit()
+
+def runloop(fn):
+  try:
+    fn()
+  except Quit:
+    logging.info('Quit requested.')
+
 class Quit(Exception):
   pass
 

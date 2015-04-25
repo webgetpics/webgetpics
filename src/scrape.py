@@ -1,7 +1,7 @@
 from re import findall
 from urllib import quote_plus, unquote_plus
 from subprocess import check_output, CalledProcessError
-from share import readquery, writefile, CONFIG, Quit, cmd
+from share import readquery, writefile, CONFIG, allowquit, runloop
 from time import time, sleep
 from os.path import isfile, join
 from os import rename
@@ -47,32 +47,30 @@ def find_img_urls(query):
     for url in urls:
       yield unquote_plus(unquote_plus(url))
 
+def main():
+  while True:
+    query = readquery(QUERY_FILE)
+    logging.info('Scraping images for query "%s".' % query)
+    for url in find_img_urls(query):
+      if query != readquery(QUERY_FILE):
+        break
+      allowquit(CMD_QUIT)
+      fname = join(URL_PATH, query, md5(url).hexdigest())
+      fnurl = '%s.url' % fname
+      fnpart = '%s.part' % fname
+      if isfile(fnurl):
+        logging.info('Image already exists "%s": %s' % (fnurl, url))
+      else:
+        logging.info('Scraped new image "%s": %s' % (fnurl, url))
+        writefile(fnpart, url)
+        rename(fnpart, fnurl)
+    logging.info('Sleeping for %i seconds' % CONFIG['SCRAPE_SLEEP'])
+    endtime = time() + CONFIG['SCRAPE_SLEEP']
+    while time() < endtime:
+      if query != readquery(QUERY_FILE):
+        break
+      allowquit(CMD_QUIT)
+      sleep(POLL_SLEEP)
+
 if __name__ == '__main__':
-  try:
-    while True:
-      query = readquery(QUERY_FILE)
-      logging.info('Scraping images for query "%s".' % query)
-      for url in find_img_urls(query):
-        if query != readquery(QUERY_FILE):
-          break
-        if cmd(CMD_QUIT):
-          raise Quit()
-        fname = join(URL_PATH, query, md5(url).hexdigest())
-        fnurl = '%s.url' % fname
-        fnpart = '%s.part' % fname
-        if isfile(fnurl):
-          logging.info('Image already exists "%s": %s' % (fnurl, url))
-        else:
-          logging.info('Scraped new image "%s": %s' % (fnurl, url))
-          writefile(fnpart, url)
-          rename(fnpart, fnurl)
-      logging.info('Sleeping for %i seconds' % CONFIG['SCRAPE_SLEEP'])
-      endtime = time() + CONFIG['SCRAPE_SLEEP']
-      while time() < endtime:
-        if query != readquery(QUERY_FILE):
-          break
-        if cmd(CMD_QUIT):
-          raise Quit()
-        sleep(POLL_SLEEP)
-  except Quit:
-    logging.info('Quit requested.')
+  runloop(main)
