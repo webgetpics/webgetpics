@@ -1,10 +1,12 @@
-from share import readquery, globfs, CONFIG
+from share import readquery, readfile, writefile, globfs, mkdir_p, CONFIG
 from os.path import join, isfile
-from os import remove, move, rename
+from os import remove, rename
 from glob import glob
 from random import shuffle
+from shutil import move
 from subprocess import call, check_output, CalledProcessError
 from time import time, sleep
+import logging
 
 RETRIES = 10 # times
 TIMEOUT = 30 # seconds
@@ -24,7 +26,7 @@ def to_produce(query):
   scraped = globfs(upath + '/*.url')
   produced = globfs(HASH_PATH + '/*.hash')
   skipped = globfs(SKIP_PATH + '/*.skip')
-  res = list(set(scraped).difference(produced.union(skipped)))
+  res = list(set(scraped).difference(set(produced).union(skipped)))
   shuffle(res)
   return res
 
@@ -56,7 +58,7 @@ def resize(urlmd5):
   geom = '%ix%i' % (CONFIG['IMG_WIDTH'], CONFIG['IMG_HEIGHT'])
   if call(['convert', join(TMP_PATH, urlmd5+'.downloaded'),
            '-resize', geom,
-           '-background', config['IMG_BGCOL'],
+           '-background', CONFIG['IMG_BGCOL'],
            '-gravity', 'center',
            '-extent', geom,
            join(TMP_PATH, urlmd5+'.'+CONFIG['IMG_EXT'])
@@ -64,7 +66,7 @@ def resize(urlmd5):
     raise Skip('Error resizing image %s.' % urlmd5)
   # Image might be a composite one, like animated gif or multi-page tiff.
   # In this case, just grab the last frame of it.
-  mask = join(TMP_PATH, urlmd5+'*.'+CONFIG['IMG_EXT']
+  mask = join(TMP_PATH, urlmd5+'*.'+CONFIG['IMG_EXT'])
   for tmppath in sorted(glob(mask), reverse=True):
     rename(tmppath, join(TMP_PATH, urlmd5+'.'+CONFIG['IMG_EXT']))
     break
@@ -92,6 +94,7 @@ def cleartmp():
     remove(fname)
 
 if __name__ == '__main__':
+  mkdir_p(TMP_PATH)
   query = None
   while True:
     if readquery(QUERY_FILE) != query:
