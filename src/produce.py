@@ -23,10 +23,9 @@ class Skip(Exception):
   pass
 
 def to_produce(query):
-  upath = join(URL_PATH, query)
-  scraped = globfs(upath + '/*.url')
-  produced = globfs(HASH_PATH + '/*.hash')
-  skipped = globfs(SKIP_PATH + '/*.skip')
+  scraped = globfs(join(URL_PATH, query, '*.url'))
+  produced = globfs(join(HASH_PATH, '*.hash'))
+  skipped = globfs(join(SKIP_PATH, '*.skip'))
   res = list(set(scraped).difference(set(produced).union(skipped)))
   shuffle(res)
   return res
@@ -121,7 +120,7 @@ def main():
         save_img(urlmd5)
       except Skip as e:
         logging.warn('%s Skipping.' % str(e))
-        writefile(join(SKIP_PATH, urlmd5, '.skip'), '')
+        writefile(join(SKIP_PATH, urlmd5+'.skip'), str(e))
     endtime = time() + delay
     while time() < endtime:
       if query != readquery(QUERY_FILE):
