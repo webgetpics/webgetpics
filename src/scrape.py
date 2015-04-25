@@ -1,13 +1,18 @@
 from re import findall
 from urllib import quote_plus, unquote_plus
 from subprocess import check_output, CalledProcessError
-from share import mkdir_p
+from share import readquery, writefile, CONFIG
+from time import time, sleep
+from os.path import isfile
+from os import rename
 import logging
 
 RETRIES = 10 # times
 RETRY_DELAY = 10 # seconds
 TIMEOUT = 30 # seconds
-BWLIMIT = 100000 # bytes/second
+POLL_SLEEP = 10 # seconds
+QUERY_PATH = 'scrape/in/query.txt'
+URLS_PATH = 'scrape/out/urls'
 
 def find_img_urls(query):
   start = 0
@@ -15,11 +20,12 @@ def find_img_urls(query):
     cmd = ['curl',
       'https://www.google.com/search?q=%s&tbm=isch&start=%i' \
         % (quote_plus(query), start),
+      '--silent',
       '--compressed',
       '--retry', str(RETRIES),
       '--retry-delay', str(RETRY_DELAY),
       '--max-time', str(TIMEOUT),
-      '--limit-rate', str(BWLIMIT),
+      '--limit-rate', str(CONFIG['BW_LIMIT']),
       '-H', 'Host: www.google.com',
       '-H', 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:36.0) '
             'Gecko/20100101 Firefox/36.0',
@@ -27,7 +33,6 @@ def find_img_urls(query):
             'q=0.9,*/*;q=0.8',
       '-H', 'Accept-Language: en-US,en;q=0.5',
       '-H', 'Connection: keep-alive']
-    print cmd
     try:
       res = check_output(cmd)
     except CalledProcessError as e:
@@ -40,5 +45,22 @@ def find_img_urls(query):
       start += 1
       yield unquote_plus(unquote_plus(url))
 
-logging.basicConfig(format='%(levelname)-8s %(asctime)-15s %(message)s')
-logging.getLogger().setLevel(logging.INFO)
+if __name__ == '__main__':
+  logging.basicConfig(format='%(levelname)-8s %(asctime)-15s %(message)s')
+  logging.getLogger().setLevel(logging.INFO)
+  while True:
+    query = readquery(QUERY_PATH)
+    logging.info('Scraping images for query "%s".' % query)
+    for url in find_img_urls(query):
+      fname = '%s/%s/%s.url' % (URLS_PATH, query, md5(url).hexdigest())
+      if isfile(fname):
+        logging.info('Image already exists %s: %s' % (fname, url))
+      else:
+        logging.info('Scraped new image %s: %s' % (fname, url))
+        writefile(fname, url)
+    logging.info('Sleeping for %i seconds' % CONFIG['SCRAPE_SLEEP'])
+    endtime = time() + CONFIG['SCRAPE_SLEEP']
+    while time() < endtime:
+      if query != readquery(QUERY_PATH):
+        break
+      sleep(POLL_SLEEP)
