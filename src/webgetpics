@@ -11,7 +11,8 @@ fi
 
 echo $$ > lock.pid
 
-mkdir -p log {scrape,produce,show}/{in,cmd} produce/out/hash
+mkdir -p log {scrape,produce,show}/{in,cmd} show/out
+touch show/out/current.url
 
 rm -rf {scrape,produce,show}/in/query.txt produce/in/url show/in/{url,img,hash}
 ln -s ../../query.txt scrape/in/query.txt
@@ -29,15 +30,17 @@ python2 -B /usr/lib/webgetpics/scrape.py &>>log/scrape.log &
 SCRAPE=$!
 python2 -B /usr/lib/webgetpics/produce.py &>>log/produce.log &
 PRODUCE=$!
+python2 -B /usr/lib/webgetpics/show.py &>>log/show.log &
+SHOW=$!
 
 function onquit() {
   trap "" SIGINT SIGTERM
   echo "Quitting." ;
-  touch {produce,scrape}/cmd/quit
-  wait $SCRAPE $PRODUCE
+  touch {produce,scrape,show}/cmd/quit
+  wait $SCRAPE $PRODUCE $SHOW
   rm lock.pid
 }
 
 trap onquit SIGINT SIGTERM
 echo "Serving."
-wait $SCRAPE $PRODUCE
+wait $SCRAPE $PRODUCE $SHOW

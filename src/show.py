@@ -1,11 +1,13 @@
-from share import runloop, readquery, readfile, writefile, CONFIG
-from os import environ, remove
+from share import runloop, readquery, readfile, writefile, \
+                  CONFIG, allowquit, command
+from os import environ
 from os.path import join, isfile
 from random import choice
 from subprocess import call
 from time import time
 import logging
 
+POLL_SLEEP = 1 # seconds
 QUERY_FILE = 'show/in/query.txt'
 URL_PATH = 'show/in/url'
 HASH_PATH = 'show/in/hash'
@@ -13,6 +15,10 @@ IMG_PATH = 'show/in/img'
 HIDQRY_PATH = 'show/out/hidden/query'
 HIDGLOB_PATH = 'show/out/hidden/global'
 CURURL_FILE = 'show/out/current.url'
+CMD_QUIT = 'show/cmd/quit'
+CMD_HIDE_QUERY = 'show/cmd/hide-query'
+CMD_HIDE_GLOBAL = 'show/cmd/hide-global'
+CMD_SKIP = 'show/cmd/skip'
 
 def refresh(query, url2hash, hash2urls, hidden):
   scraped = globfs(join(URL_PATH, query, '*.url'))
@@ -31,8 +37,7 @@ def pick_img(times, url2img, hash2urls, hidden):
   images = set(url2img.values()).difference(hidden)
   if not images:
     logging.info('No images to pick from.')
-    if isfile(CURURL_FILE):
-      remove(CURURL_FILE)
+    writefile(CURURL_FILE, '')
     return None
   newbies = [x for x in images if x not in times]
   winner = choice(newbies) if newbies else min(images, key=lambda x: times[x])
@@ -51,6 +56,34 @@ def setbg(imghash):
   else:
     logging.warn('Cannot find image: %s' % img)
 
+def allowhidequery(query, picked, hidden):
+  if command(CMD_HIDE_QUERY):
+    if picked:
+      logging.info('Hiding image %s from query "%s".' % (picked, query))
+      writefile(join(HIDQRY_PATH, query, picked+'.hidden'), '')
+      hidden.add(picked)
+    else:
+      logging.info('No images. Ignoring hide from query "%s".' % query)
+    raise Handled()
+
+def allowhideglobal(query, picked, hidden):
+  if command(CMD_HIDE_GLOBAL):
+    if picked:
+      logging.info('Hiding image %s from all queries.' % picked)
+      writefile(join(HIDGLOB_PATH, picked+'.hidden'), '')
+      hidden.add(picked)
+    else:
+      logging.info('No images. Ignoring hide from all queries.')
+    raise Handled()
+
+def allowskip():
+  if command(CMD_SKIP):
+    logging.info('Skipping current image.')
+    raise Handled()
+
+class Handled(Exception):
+  pass
+
 def main():
   query = None
   while True:
@@ -65,6 +98,20 @@ def main():
     picked = pick_img(times, url2hash, hash2urls, hidden)
     if picked:
       setbg(picked)
+      endtime = time() + CONFIG['SHOW_SLEEP']
+    else:
+      endtime = time() + CONFIG['SHOW_SLEEP_NO_IMAGES']
+    try:
+      while time() < endtime:
+        if query != readquery(QUERY_FILE):
+          break
+        allowquit(CMD_QUIT)
+        allowhidequery(query, picked, hidden)
+        allowhideglobal(query, picked, hidden)
+        allowskip()
+        sleep(POLL_SLEEP)
+    except Handled:
+      pass
 
 if __name__ == '__main__':
   runloop(main)

@@ -17,7 +17,15 @@
  'PRODUCE_SLEEP_MIN': 10,
  'PRODUCE_SLEEP_MAX': 600,
 
- # X Window DISPLAY variable to set background for.
+ # Set new background picture after this time in seconds.
+ # We want a slide show, don't we?
+ 'SHOW_SLEEP': 600,
+
+ # If there are no images to show, check again after this time in seconds.
+ # Checking for new images can be time consuming, so it's wise to do it rarely.
+ 'SHOW_SLEEP_NO_IMAGES': 60,
+
+ # X Window DISPLAY variable to set background picture for.
  'DISPLAY': ':0',
 
  # There are very large and very small images on the internet.

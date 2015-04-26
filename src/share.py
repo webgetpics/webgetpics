@@ -38,13 +38,13 @@ def readquery(path):
 def globfs(g):
   return [splitext(split(x)[1])[0] for x in glob(g)]
 
-def cmd(path):
+def command(path):
   if isfile(path):
     os.remove(path)
     return True
 
 def allowquit(path):
-  if cmd(path):
+  if command(path):
     raise Quit()
 
 def runloop(fn):
