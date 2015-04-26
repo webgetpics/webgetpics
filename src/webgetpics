@@ -11,12 +11,16 @@ fi
 
 echo $$ > lock.pid
 
-mkdir -p log {scrape,produce}/{in,cmd}
+mkdir -p log {scrape,produce,show}/{in,cmd} produce/out/hash
 
-rm -rf {scrape,produce}"/in/query.txt" "produce/in/url"
-ln -s ../../query.txt "scrape/in/query.txt"
-ln -s ../../query.txt "produce/in/query.txt"
-ln -s ../../scrape/out/url "produce/in/url"
+rm -rf {scrape,produce,show}/in/query.txt produce/in/url show/in/{url,img,hash}
+ln -s ../../query.txt scrape/in/query.txt
+ln -s ../../query.txt produce/in/query.txt
+ln -s ../../query.txt show/in/query.txt
+ln -s ../../scrape/out/url produce/in/url
+ln -s ../../scrape/out/url show/in/url
+ln -s ../../produce/out/hash show/in/hash
+ln -s ../../produce/out/img show/in/img
 
 if [ ! -e config.py ] ; then cp /usr/lib/webgetpics/config.py . ; fi
 if [ ! -e query.txt ] ; then cp /usr/lib/webgetpics/query.txt . ; fi
