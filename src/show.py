@@ -100,7 +100,7 @@ def main():
       setbg(picked)
       endtime = time() + CONFIG['SHOW_SLEEP']
     else:
-      endtime = time() + CONFIG['SHOW_SLEEP_NO_IMAGES']
+      endtime = time() + CONFIG['SHOW_SLEEP_NO_IMG']
     try:
       while time() < endtime:
         if query != readquery(QUERY_FILE):

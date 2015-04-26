@@ -23,7 +23,7 @@
 
  # If there are no images to show, check again after this time in seconds.
  # Checking for new images can be time consuming, so it's wise to do it rarely.
- 'SHOW_SLEEP_NO_IMAGES': 60,
+ 'SHOW_SLEEP_NO_IMG': 60,
 
  # X Window DISPLAY variable to set background picture for.
  'DISPLAY': ':0',
