@@ -1,10 +1,10 @@
 from share import runloop, readquery, readfile, writefile, \
-                  CONFIG, allowquit, command
+                  CONFIG, allowquit, command, globfs
 from os import environ
 from os.path import join, isfile
 from random import choice
 from subprocess import call
-from time import time
+from time import time, sleep
 import logging
 
 POLL_SLEEP = 1 # seconds
@@ -24,7 +24,7 @@ def refresh(query, url2hash, hash2urls, hidden):
   scraped = globfs(join(URL_PATH, query, '*.url'))
   produced = globfs(join(HASH_PATH, '*.hash'))
   for urlmd5 in set(scraped).intersection(produced):
-    if urlmd5 not in url2img:
+    if urlmd5 not in url2hash:
       url = readfile(join(URL_PATH, query, urlmd5+'.url'))
       imghash = readfile(join(HASH_PATH, urlmd5+'.hash'))
       url2hash[urlmd5] = imghash
@@ -33,8 +33,8 @@ def refresh(query, url2hash, hash2urls, hidden):
       or isfile(join(HIDGLOB_PATH, imghash+'.hidden')):
         hidden.add(imghash)
 
-def pick_img(times, url2img, hash2urls, hidden):
-  images = set(url2img.values()).difference(hidden)
+def pick_img(times, url2hash, hash2urls, hidden):
+  images = set(url2hash.values()).difference(hidden)
   if not images:
     logging.info('No images to pick from.')
     writefile(CURURL_FILE, '')
