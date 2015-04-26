@@ -1,5 +1,0 @@
-curl
-python2
-wget
-imagemagick
-feh
