@@ -26,7 +26,7 @@ vi config.py
 Run: `webgetpics`
 
 To exit press `Ctrl-C`.
-This may take some time, you might want to track progress in logs.
+This may take some time, you might want to track progress in logs (see below).
 
 # Commands
 
