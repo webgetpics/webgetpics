@@ -12,8 +12,9 @@ md5sums=('SKIP')
 
 package() {
     cd "$srcdir/$pkgname"
-    mkdir -p "$pkgdir"/usr/{bin,lib/webgetpics,share/licenses/webgetpics}
+    mkdir -p "$pkgdir"/usr/{bin,lib/webgetpics,share/{licenses,doc}/webgetpics}
     ln -s /usr/lib/webgetpics/webgetpics "$pkgdir/usr/bin/webgetpics"
     cp -r src/* "$pkgdir/usr/lib/webgetpics"
     cp LICENSE "$pkgdir/usr/share/licenses/webgetpics"
+    cp README.md "$pkgdir/usr/share/doc"
 }
