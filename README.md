@@ -1,6 +1,6 @@
 # webgetpics
 
-Command line tool to put pictures from web search to X desktop background.
+Command line tool to set pictures from web search as X desktop background.
 For more information please see [homepage](http://www.webgetpics.org).
 
 # Installation
@@ -32,7 +32,7 @@ This may take some time, you might want to track progress in logs.
 
 All interactions with webgetpics are done through file system.
 Some commands may take time to apply, you might want to track progress in logs.
-This sections describe how to do some typical operations.
+This section describes how to do some typical operations.
 
 View logs: `tail -f log/*.log`
 
