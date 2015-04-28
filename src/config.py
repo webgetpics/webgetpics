@@ -1,4 +1,7 @@
 {
+ # X Window DISPLAY variable to set background picture for.
+ 'DISPLAY': ':0',
+
  # Bandwidth usage limit in bytes/second.
  'LIMIT_RATE': 100000,
 
@@ -25,10 +28,7 @@
  # Checking for new images can be time consuming, so it's wise to do it rarely.
  'SHOW_SLEEP_NO_IMG': 60,
 
- # X Window DISPLAY variable to set background picture for.
- 'DISPLAY': ':0',
-
- # There are very large and very small images on the internet.
+ # There are very large and very small images on the Internet.
  # We'll skip images whose width or height is less than IMG_DIM_MIN pixels or
  # greater than IMG_DIM_MAX pixels.
  'IMG_DIM_MIN': 5,
