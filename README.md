@@ -49,7 +49,7 @@ Never show current picture for current web search string:
   `touch show/cmd/hide-query`
 
 Never show current picture for any web search strings:
-  `touch show/cmd/hide/global`
+  `touch show/cmd/hide-global`
 
 # Contact
 
