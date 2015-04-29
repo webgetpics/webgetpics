@@ -36,19 +36,19 @@ This section describes how to do some typical operations.
 
 View logs: `tail -f log/*.log`
 
-Change web search string: `echo pablo picasso paintings > query.txt`
+Change web search query: `echo pablo picasso paintings > query.txt`
 
-Show current web search string: `cat query.txt`
+Show current web search query: `cat query.txt`
 
 Download original version of currently shown picture:
   `wget $(cat show/out/current.url)`
 
 Show next picture: `touch show/cmd/skip`
 
-Never show current picture for current web search string:
+Never show current picture for current web search query:
   `touch show/cmd/hide-query`
 
-Never show current picture for any web search strings:
+Never show current picture for all web search queries:
   `touch show/cmd/hide-global`
 
 # Contact
